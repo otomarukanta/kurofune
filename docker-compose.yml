@@ -7,8 +7,24 @@ services:
     ports:
      - "5432:5432"
     env_file:
-      - .env
+      - .postgres_env
+    environment:
+      TZ: "JST"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 0.0.0.0:24224
+        tag: docker.{{.Name}}
     restart: always
+  fluentd:
+    build: ./fluentd
+    ports:
+      - "24224:24224"
+    env_file:
+      - .fluentd_env
+    environment:
+      TZ: "JST-9"
+      FLUENTD_CONF: fluent.conf
 volumes:
   db_data:
     driver: local
